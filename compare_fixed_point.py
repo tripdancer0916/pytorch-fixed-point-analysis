@@ -32,6 +32,8 @@ def main(activation):
     const_signal1 = np.expand_dims(const_signal1, axis=1)
     const_signal_tensor1 = torch.from_numpy(np.array([const_signal1]))
 
+    print(const_signal_tensor1.shape)
+
     hidden = torch.zeros(1, 200)
     hidden = hidden.to(device)
     const_signal_tensor1 = const_signal_tensor1.float().to(device)
@@ -60,7 +62,7 @@ def main(activation):
         hidden_list, _, _ = model(const_signal_tensor2, hidden)
 
     fixed_point3, _ = analyzer.find_fixed_point(torch.unsqueeze(hidden_list[:, 20, :], dim=0).to(device),
-                                                const_signal_tensor2)
+                                                const_signal_tensor1)
     print('distance between 2 fixed point start from different IC; same time of different trajectories.')
     print(torch.norm(fixed_point1 - fixed_point3).item())
 
