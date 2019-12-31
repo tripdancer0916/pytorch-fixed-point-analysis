@@ -62,7 +62,7 @@ def main(activation):
         hidden_list, _, _ = model(const_signal_tensor2, hidden)
 
     fixed_point3, _ = analyzer.find_fixed_point(torch.unsqueeze(hidden_list[:, 20, :], dim=0).to(device),
-                                                const_signal_tensor1)
+                                                const_signal_tensor2)
     print('distance between 2 fixed point start from different IC; same time of different trajectories.')
     print(torch.norm(fixed_point1 - fixed_point3).item())
 
