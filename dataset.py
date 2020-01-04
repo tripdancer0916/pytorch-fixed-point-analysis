@@ -33,14 +33,14 @@ class Torus(data.Dataset):
 
     def __getitem__(self, item):
         freq1 = np.random.randint(1, self.freq_range + 1)
-        freq2 = np.random.randint(1, self.freq_range + 1) / 8
+        freq2 = np.random.randint(1, self.freq_range + 1) / 3
         const_signal1 = np.repeat(freq1 / self.freq_range + 0.25, self.time_length)
         const_signal2 = np.repeat(freq2 / self.freq_range + 0.25, self.time_length)
         const_signal1 = np.expand_dims(const_signal1, axis=1)
         const_signal2 = np.expand_dims(const_signal2, axis=1)
         const_signal = np.concatenate((const_signal1, const_signal2), axis=1)
         # print(const_signal.shape)
-        t = np.arange(0, self.time_length*0.2, 0.2)
-        target = 2.0 * np.sin(freq1 * t) + 0.5 * np.sin(freq1 * t)
+        t = np.arange(0, self.time_length*0.3, 0.3)
+        target = np.sin(freq1 * t) + 0.5 * np.sin(freq2 * t)
         target = np.expand_dims(target, axis=1)
         return const_signal, target
