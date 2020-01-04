@@ -12,7 +12,7 @@ sys.path.append('../')
 
 from torch.autograd import Variable
 
-from dataset import SineWave
+from dataset import Torus
 from model import RecurrentNeuralNetwork
 
 
@@ -21,13 +21,13 @@ def main(activation):
     print(device)
 
     os.makedirs('trained_model', exist_ok=True)
-    save_path = f'trained_model/{activation}'
+    save_path = f'trained_model/torus_{activation}'
     os.makedirs(save_path, exist_ok=True)
 
     model = RecurrentNeuralNetwork(n_in=1, n_out=1, n_hid=200, device=device,
                                    activation=activation, sigma=0, use_bias=True).to(device)
 
-    train_dataset = SineWave(freq_range=51, time_length=40)
+    train_dataset = Torus(freq_range=3, time_length=200)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=50,
                                                    num_workers=2, shuffle=True,
