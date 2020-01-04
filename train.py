@@ -45,7 +45,7 @@ def main(activation):
             inputs, target, = data
             inputs, target, = inputs.float(), target.float()
             inputs, target = Variable(inputs).to(device), Variable(target).to(device)
-            print(inputs.shape)
+            # print(inputs.shape)
 
             hidden = torch.zeros(50, 200)
             hidden = hidden.to(device)
