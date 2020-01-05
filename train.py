@@ -58,7 +58,7 @@ def main(activation):
             loss.backward()
             optimizer.step()
 
-        if epoch > 0 and epoch % 200 == 0:
+        if epoch > 0 and epoch % 100 == 0:
             print(f'Train Epoch: {epoch}, Loss: {loss.item():.6f}')
             print('output', output[0, :, 0].cpu().detach().numpy())
             print('target', target[0, :, 0].cpu().detach().numpy())
