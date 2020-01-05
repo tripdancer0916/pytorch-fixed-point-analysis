@@ -14,14 +14,14 @@ from model import RecurrentNeuralNetwork
 
 def main(activation):
     os.makedirs('figures', exist_ok=True)
-    freq_range = 51
-    time_length = 40
+    freq_range = 3
+    time_length = 300
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = RecurrentNeuralNetwork(n_in=1, n_out=1, n_hid=200, device=device,
                                    activation=activation, sigma=0, use_bias=True).to(device)
 
-    model_path = f'trained_model/{activation}/epoch_1000.pth'
+    model_path = f'trained_model/torus_{activation}/epoch_2000.pth'
     model.load_state_dict(torch.load(model_path, map_location=device))
 
     model.eval()
@@ -39,7 +39,7 @@ def main(activation):
     with torch.no_grad():
         hidden_list, _, _ = model(const_signal_tensor, hidden)
 
-    fixed_point, _ = analyzer.find_fixed_point(torch.unsqueeze(hidden_list[:, 20, :], dim=0).to(device),
+    fixed_point, _ = analyzer.find_fixed_point(torch.unsqueeze(hidden_list[:, 200, :], dim=0).to(device),
                                                const_signal_tensor, view=True)
 
     # linear approximation around fixed point
@@ -55,7 +55,7 @@ def main(activation):
     plt.scatter(w_real, w_im)
     plt.xlabel(r'$Re(\lambda)$')
     plt.ylabel(r'$Im(\lambda)$')
-    plt.savefig(f'figures/{activation}_eigenvalues.png', dpi=100)
+    plt.savefig(f'figures/torus_{activation}_eigenvalues.png', dpi=100)
 
     eig_freq = list()
     dynamics_freq = list()
@@ -87,7 +87,7 @@ def main(activation):
     plt.xlabel(r'$|Im(\lambda_{max})|$')
     plt.ylabel(r'$\omega$')
     plt.title('relationship of frequency')
-    plt.savefig(f'figures/freq_{activation}.png', dpi=100)
+    plt.savefig(f'figures/torus_freq_{activation}.png', dpi=100)
 
 
 if __name__ == '__main__':

@@ -12,7 +12,7 @@ sys.path.append('../')
 
 from torch.autograd import Variable
 
-from dataset import Torus
+from dataset import SineWave
 from model import RecurrentNeuralNetwork
 
 
@@ -21,13 +21,13 @@ def main(activation):
     print(device)
 
     os.makedirs('trained_model', exist_ok=True)
-    save_path = f'trained_model/torus_{activation}'
+    save_path = f'trained_model/{activation}'
     os.makedirs(save_path, exist_ok=True)
 
-    model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=300, device=device,
-                                   activation=activation, sigma=0.05, use_bias=True).to(device)
+    model = RecurrentNeuralNetwork(n_in=1, n_out=1, n_hid=200, device=device,
+                                   activation=activation, sigma=0, use_bias=True).to(device)
 
-    train_dataset = Torus(freq_range=3, time_length=60)
+    train_dataset = SineWave(freq_range=51, time_length=40)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=50,
                                                    num_workers=2, shuffle=True,
@@ -44,20 +44,19 @@ def main(activation):
             inputs, target, = data
             inputs, target, = inputs.float(), target.float()
             inputs, target = Variable(inputs).to(device), Variable(target).to(device)
-            # print(inputs.shape)
 
-            hidden = torch.zeros(50, 300)
+            hidden = torch.zeros(50, 200)
             hidden = hidden.to(device)
 
             optimizer.zero_grad()
             hidden = hidden.detach()
             hidden_list, output, hidden = model(inputs, hidden)
 
-            loss = torch.nn.MSELoss()(output[:, 5:], target[:, 5:])
+            loss = torch.nn.MSELoss()(output, target)
             loss.backward()
             optimizer.step()
 
-        if epoch > 0 and epoch % 100 == 0:
+        if epoch > 0 and epoch % 200 == 0:
             print(f'Train Epoch: {epoch}, Loss: {loss.item():.6f}')
             print('output', output[0, :, 0].cpu().detach().numpy())
             print('target', target[0, :, 0].cpu().detach().numpy())
