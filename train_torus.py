@@ -54,7 +54,7 @@ def main(activation):
             hidden = hidden.detach()
             hidden_list, output, hidden = model(inputs, hidden)
 
-            loss = torch.nn.MSELoss()(output, target)
+            loss = torch.nn.MSELoss()(output[:, 10:], target[:, 10:])
             loss.backward()
             optimizer.step()
 
