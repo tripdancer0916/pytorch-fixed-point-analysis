@@ -25,7 +25,7 @@ def main(activation):
     os.makedirs(save_path, exist_ok=True)
 
     model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=300, device=device,
-                                   activation=activation, sigma=0, use_bias=True).to(device)
+                                   activation=activation, sigma=0.05, use_bias=True).to(device)
 
     train_dataset = Torus(freq_range=3, time_length=60)
     # train_dataset = SineWave(freq_range=3, time_length=200)
@@ -54,7 +54,7 @@ def main(activation):
             hidden = hidden.detach()
             hidden_list, output, hidden = model(inputs, hidden)
 
-            loss = torch.nn.MSELoss()(output[:, 10:], target[:, 10:])
+            loss = torch.nn.MSELoss()(output[:, 5:], target[:, 5:])
             loss.backward()
             optimizer.step()
 
