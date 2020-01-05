@@ -41,6 +41,6 @@ class Torus(data.Dataset):
         const_signal = np.concatenate((const_signal1, const_signal2), axis=1)
         # print(const_signal.shape)
         t = np.arange(0, self.time_length * 0.3, 0.3)
-        target = 0.6 * np.sin(1.8 * freq1 * t) + 0.8 * np.sin(0.3 * freq2 * t)
+        target = 0.6 * np.sin(2.2 * freq1 * t) + 0.8 * np.sin(0.5 * freq2 * t)
         target = np.expand_dims(target, axis=1)
         return const_signal, target
