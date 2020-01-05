@@ -24,10 +24,10 @@ def main(activation):
     save_path = f'trained_model/torus_{activation}'
     os.makedirs(save_path, exist_ok=True)
 
-    model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=200, device=device,
+    model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=300, device=device,
                                    activation=activation, sigma=0, use_bias=True).to(device)
 
-    train_dataset = Torus(freq_range=3, time_length=50)
+    train_dataset = Torus(freq_range=3, time_length=100)
     # train_dataset = SineWave(freq_range=3, time_length=200)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=50,
@@ -47,7 +47,7 @@ def main(activation):
             inputs, target = Variable(inputs).to(device), Variable(target).to(device)
             # print(inputs.shape)
 
-            hidden = torch.zeros(50, 200)
+            hidden = torch.zeros(50, 300)
             hidden = hidden.to(device)
 
             optimizer.zero_grad()

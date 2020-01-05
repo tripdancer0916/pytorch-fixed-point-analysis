@@ -33,7 +33,7 @@ class Torus(data.Dataset):
 
     def __getitem__(self, item):
         freq1 = np.random.randint(1, self.freq_range + 1)
-        freq2 = np.random.randint(1, self.freq_range + 1)
+        freq2 = 1
         const_signal1 = np.repeat(freq1 / self.freq_range + 0.25, self.time_length)
         const_signal2 = np.repeat(freq2 / self.freq_range + 0.25, self.time_length)
         const_signal1 = np.expand_dims(const_signal1, axis=1)
