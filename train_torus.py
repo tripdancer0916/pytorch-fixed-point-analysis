@@ -24,7 +24,7 @@ def main(activation):
     save_path = f'trained_model/torus_{activation}'
     os.makedirs(save_path, exist_ok=True)
 
-    sigma = 0.1
+    sigma = 0.07
 
     model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=300, device=device,
                                    activation=activation, sigma=sigma, use_bias=True).to(device)
