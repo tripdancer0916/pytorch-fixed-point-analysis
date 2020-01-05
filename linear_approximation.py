@@ -35,8 +35,6 @@ class Torus(object):
 
 def main(activation):
     os.makedirs('figures', exist_ok=True)
-    freq_range = 3
-    time_length = 300
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=300, device=device,
@@ -81,6 +79,37 @@ def main(activation):
     plt.ylabel(r'$Im(\lambda)$')
     plt.savefig(f'figures/torus_{activation}_freq_{freq1}_eigenvalues.png', dpi=100)
 
+    freq1 = 2
+    signal_numpy, target = eval_dataset.getitem(freq1)
+    signal = torch.from_numpy(np.array([signal_numpy]))
+
+    hidden = torch.zeros(1, 300)
+    hidden = hidden.to(device)
+    signal = signal.float().to(device)
+    with torch.no_grad():
+        hidden_list, _, _ = model(signal, hidden)
+
+    const_signal = signal[0, 80, :]
+    const_signal = const_signal.float().to(device)
+
+    fixed_point, result_ok = analyzer.find_fixed_point(hidden_list[0, 200], const_signal, view=True)
+
+    # linear approximation around fixed point
+    jacobian = analyzer.calc_jacobian(fixed_point, const_signal)
+
+    # eigenvalue decomposition
+    w, v = np.linalg.eig(jacobian)
+    w_real = list()
+    w_im = list()
+    for eig in w:
+        w_real.append(eig.real)
+        w_im.append(eig.imag)
+    plt.scatter(w_real, w_im)
+    plt.xlabel(r'$Re(\lambda)$')
+    plt.ylabel(r'$Im(\lambda)$')
+    plt.savefig(f'figures/torus_{activation}_freq_{freq1}_eigenvalues.png', dpi=100)
+
+    """
     eig_freq = list()
     dynamics_freq = list()
     for i in range(3):
@@ -111,6 +140,7 @@ def main(activation):
     plt.ylabel(r'$\omega$')
     plt.title('relationship of frequency')
     plt.savefig(f'figures/torus_freq_{activation}.png', dpi=100)
+    """
 
 
 if __name__ == '__main__':
