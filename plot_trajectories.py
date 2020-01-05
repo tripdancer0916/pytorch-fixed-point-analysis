@@ -54,7 +54,7 @@ def main(activation):
 
     model.eval()
 
-    analyzer = FixedPoint(model=model, device=device, max_epochs=800000)
+    analyzer = FixedPoint(model=model, device=device, max_epochs=500000)
 
     hidden_list_list = np.zeros([3 * (time_length-100), model.n_hid])
     fixed_point_list = np.zeros([3, model.n_hid])
@@ -73,8 +73,6 @@ def main(activation):
         const_signal = const_signal.float().to(device)
 
         fixed_point, result_ok = analyzer.find_fixed_point(hidden_list[0, 200], const_signal, view=True)
-        if not result_ok:
-            continue
 
         hidden_list_list[i * (time_length-100):(i + 1) * (time_length-100), ...] = hidden_list.cpu().numpy()[:, 100:, :]
         fixed_point_list[i] = fixed_point.detach().cpu().numpy()
