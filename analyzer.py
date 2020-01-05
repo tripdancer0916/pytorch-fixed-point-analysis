@@ -6,8 +6,8 @@ from torch.autograd import Variable
 
 
 class FixedPoint(object):
-    def __init__(self, model, device, gamma=0.01, speed_tor=1e-06, max_epochs=200000,
-                 lr_decay_epoch=10000):
+    def __init__(self, model, device, gamma=0.01, speed_tor=1e-06, max_epochs=800000,
+                 lr_decay_epoch=50000):
         self.model = model
         self.device = device
         self.gamma = gamma
@@ -39,7 +39,7 @@ class FixedPoint(object):
             hidden_activated = Variable(new_hidden).to(self.device)
             hidden_activated.requires_grad = True
             speed = self.calc_speed(hidden_activated, const_signal)
-            if view and i % 1000 == 0:
+            if view and i % 5000 == 0:
                 print(f'epoch: {i}, speed={speed.item()}')
             if speed.item() < self.speed_tor:
                 print(f'epoch: {i}, speed={speed.item()}')
