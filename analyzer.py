@@ -18,8 +18,8 @@ class FixedPoint(object):
         self.model.eval()
 
     def calc_speed(self, hidden_activated, const_signal):
-        input_signal = const_signal.permute(1, 0, 2)
-        pre_activates = self.model.w_in(input_signal[0]) + self.model.w_hh(hidden_activated)
+        # input_signal = const_signal.permute(1, 0, 2)
+        pre_activates = self.model.w_in(const_signal) + self.model.w_hh(hidden_activated)
 
         if self.model.activation == 'relu':
             activated = F.relu(pre_activates)
@@ -58,15 +58,15 @@ class FixedPoint(object):
         fixed_point = new_hidden[0, 0]
         return fixed_point, result_ok
 
-    def calc_jacobian(self, fixed_point, const_signal_tensor):
+    def calc_jacobian(self, fixed_point, const_signal):
         fixed_point = torch.unsqueeze(fixed_point, dim=1)
         fixed_point = Variable(fixed_point).to(self.device)
         fixed_point.requires_grad = True
-        input_signal = const_signal_tensor.permute(1, 0, 2)
+        # input_signal = const_signal_tensor.permute(1, 0, 2)
         w_hh = self.model.w_hh.weight
         w_hh.requires_grad = False
         w_hh = w_hh.to(self.device)
-        pre_activates = torch.unsqueeze(self.model.w_in(input_signal[0])[0], dim=1) + \
+        pre_activates = torch.unsqueeze(self.model.w_in(const_signal), dim=1) + \
                         w_hh @ fixed_point + torch.unsqueeze(self.model.w_hh.bias, dim=1)
 
         if self.model.activation == 'relu':
