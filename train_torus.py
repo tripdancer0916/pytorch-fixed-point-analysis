@@ -24,8 +24,10 @@ def main(activation):
     save_path = f'trained_model/torus_{activation}'
     os.makedirs(save_path, exist_ok=True)
 
+    sigma = 0.1
+
     model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=300, device=device,
-                                   activation=activation, sigma=0.05, use_bias=True).to(device)
+                                   activation=activation, sigma=sigma, use_bias=True).to(device)
 
     train_dataset = Torus(freq_range=3, time_length=60)
 
@@ -61,7 +63,7 @@ def main(activation):
             print(f'Train Epoch: {epoch}, Loss: {loss.item():.6f}')
             print('output', output[0, :, 0].cpu().detach().numpy())
             print('target', target[0, :, 0].cpu().detach().numpy())
-            torch.save(model.state_dict(), os.path.join(save_path, f'epoch_{epoch}.pth'))
+            torch.save(model.state_dict(), os.path.join(save_path, f'sigma_{sigma}_epoch_{epoch}.pth'))
 
 
 if __name__ == '__main__':
