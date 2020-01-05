@@ -55,7 +55,7 @@ def main(activation):
 
     model.eval()
 
-    analyzer = FixedPoint(model=model, device=device, max_epochs=200000)
+    analyzer = FixedPoint(model=model, device=device, max_epochs=800000)
 
     hidden_list_list = np.zeros([5 * (time_length-100), model.n_hid])
     fixed_point_list = np.zeros([5, model.n_hid])

@@ -55,7 +55,7 @@ class FixedPoint(object):
 
             new_hidden = hidden_activated - gamma * hidden_activated.grad
 
-        fixed_point = new_hidden[0, 0]
+        fixed_point = new_hidden
         return fixed_point, result_ok
 
     def calc_jacobian(self, fixed_point, const_signal):
