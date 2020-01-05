@@ -26,8 +26,7 @@ class Torus(object):
     def __len__(self):
         return 200
 
-    def getitem(self):
-        freq1 = np.random.randint(1, self.freq_range + 1)
+    def getitem(self, freq1):
         freq2 = 2
         const_signal1 = np.repeat(freq1 / self.freq_range + 0.25, self.time_length)
         const_signal2 = np.repeat(freq2 / self.freq_range + 0.25, self.time_length)
@@ -57,11 +56,11 @@ def main(activation):
 
     analyzer = FixedPoint(model=model, device=device, max_epochs=800000)
 
-    hidden_list_list = np.zeros([5 * (time_length-100), model.n_hid])
-    fixed_point_list = np.zeros([5, model.n_hid])
+    hidden_list_list = np.zeros([3 * (time_length-100), model.n_hid])
+    fixed_point_list = np.zeros([3, model.n_hid])
     i = 0
-    while i < 5:
-        signal_numpy, target = eval_dataset.getitem()
+    for freq1 in range(1, 4):
+        signal_numpy, target = eval_dataset.getitem(freq1)
         signal = torch.from_numpy(np.array([signal_numpy]))
 
         hidden = torch.zeros(1, 300)
@@ -96,7 +95,7 @@ def main(activation):
     pc_trajectory = pca.transform(hidden_list_list)
     pc_fixed_point = pca.transform(fixed_point_list)
 
-    for i in range(5):
+    for i in range(3):
         ax.plot(pc_trajectory.T[0, i * time_length:(i + 1) * time_length],
                 pc_trajectory.T[1, i * time_length:(i + 1) * time_length],
                 pc_trajectory.T[2, i * time_length:(i + 1) * time_length], color='royalblue')
