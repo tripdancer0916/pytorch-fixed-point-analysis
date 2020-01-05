@@ -27,7 +27,7 @@ def main(activation):
     model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=300, device=device,
                                    activation=activation, sigma=0.05, use_bias=True).to(device)
 
-    train_dataset = Torus(freq_range=3, time_length=100)
+    train_dataset = Torus(freq_range=3, time_length=60)
     # train_dataset = SineWave(freq_range=3, time_length=200)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=50,
