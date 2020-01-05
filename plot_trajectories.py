@@ -69,7 +69,7 @@ def main(activation):
 
     fixed_point, result_ok = analyzer.find_fixed_point(hidden_list[0, 200], const_signal, view=True)
 
-    dynamics = hidden_list.cpu().numpy()[:, 100:, :]
+    dynamics = hidden_list.cpu().numpy()[0, 100:, :]
     fixed_point = fixed_point.detach().cpu().numpy()
 
     pca = PCA(n_components=3)
