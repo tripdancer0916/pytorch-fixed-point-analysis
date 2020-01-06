@@ -25,8 +25,9 @@ def main(activation):
     os.makedirs(save_path, exist_ok=True)
 
     sigma = 0.05
+    n_hid = 100
 
-    model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=50, device=device,
+    model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=n_hid, device=device,
                                    activation=activation, sigma=sigma, use_bias=True).to(device)
 
     train_dataset = FlipFlop(time_length=60)
@@ -48,7 +49,7 @@ def main(activation):
             inputs, target = Variable(inputs).to(device), Variable(target).to(device)
             # print(inputs.shape)
 
-            hidden = torch.zeros(50, 50)
+            hidden = torch.zeros(50, n_hid)
             hidden = hidden.to(device)
 
             optimizer.zero_grad()
