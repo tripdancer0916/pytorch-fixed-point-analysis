@@ -97,7 +97,7 @@ class FlipFlop(data.Dataset):
 
         target_signal = np.zeros(self.time_length - 10)
         for index in range(10, self.time_length):
-            target_signal[index] = slow_signal_record[index] * fast_signal_record[index]
+            target_signal[index-10] = slow_signal_record[index] * fast_signal_record[index]
 
         fast_signal = np.expand_dims(u_fast_signal, axis=1)
         slow_signal = np.expand_dims(u_slow_signal, axis=1)
