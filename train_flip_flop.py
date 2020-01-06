@@ -30,7 +30,7 @@ def main(activation):
     model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=n_hid, device=device,
                                    activation=activation, sigma=sigma, use_bias=True).to(device)
 
-    train_dataset = FlipFlop(time_length=60, u_fast_mean=3, u_slow_mean=3)
+    train_dataset = FlipFlop(time_length=60, u_fast_mean=3, u_slow_mean=10)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=50,
                                                    num_workers=2, shuffle=True,
@@ -62,8 +62,8 @@ def main(activation):
 
         if epoch > 0 and epoch % 100 == 0:
             print(f'Train Epoch: {epoch}, Loss: {loss.item():.6f}')
-            print('output', output[0, :, 0].cpu().detach().numpy())
-            print('target', target[0, :, 0].cpu().detach().numpy())
+            print('output', output[0, 10:, 0].cpu().detach().numpy())
+            print('target', target[0, 10:, 0].cpu().detach().numpy())
             torch.save(model.state_dict(), os.path.join(save_path, f'sigma_{sigma}_epoch_{epoch}.pth'))
 
 
