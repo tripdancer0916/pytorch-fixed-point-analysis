@@ -47,7 +47,7 @@ def main(activation):
 
     eval_dataset = Torus(freq_range=3, time_length=300)
 
-    analyzer = FixedPoint(model=model, device=device, max_epochs=800000)
+    analyzer = FixedPoint(model=model, device=device, speed_tor=1e-15, max_epochs=800000)
 
     freq1 = 1
     signal_numpy, target = eval_dataset.getitem(freq1)
@@ -74,9 +74,11 @@ def main(activation):
     for eig in w:
         w_real.append(eig.real)
         w_im.append(eig.imag)
+    plt.figure()
     plt.scatter(w_real, w_im)
     plt.xlabel(r'$Re(\lambda)$')
     plt.ylabel(r'$Im(\lambda)$')
+    plt.title(f'freq={freq1}, eigenvalues of Jacobian')
     plt.savefig(f'figures/torus_{activation}_freq_{freq1}_eigenvalues.png', dpi=100)
 
     freq1 = 2
@@ -104,9 +106,11 @@ def main(activation):
     for eig in w:
         w_real.append(eig.real)
         w_im.append(eig.imag)
+    plt.figure()
     plt.scatter(w_real, w_im)
     plt.xlabel(r'$Re(\lambda)$')
     plt.ylabel(r'$Im(\lambda)$')
+    plt.title(f'freq={freq1}, eigenvalues of Jacobian')
     plt.savefig(f'figures/torus_{activation}_freq_{freq1}_eigenvalues.png', dpi=100)
 
     """
