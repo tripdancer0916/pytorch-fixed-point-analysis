@@ -154,6 +154,7 @@ def main(config_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='PyTorch RNN training')
-    parser.add_argument('--activation', type=str, default='tanh')
+    parser.add_argument('config_path', type=str)
     args = parser.parse_args()
-    main(args.activation)
+    print(args)
+    main(args.config_path)
