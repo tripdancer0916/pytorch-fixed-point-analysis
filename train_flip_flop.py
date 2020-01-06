@@ -54,7 +54,7 @@ def main(config_path):
                            lr=cfg['TRAIN']['LR'], weight_decay=cfg['TRAIN']['WEIGHT_DECAY'])
 
     for epoch in range(cfg['TRAIN']['NUM_EPOCH'] + 1):
-        if epoch == 1000:
+        if epoch == 300:
             train_dataset = FlipFlop(time_length=cfg['DATALOADER']['TIME_LENGTH'],
                                      u_fast_mean=cfg['DATALOADER']['FAST_MEAN'],
                                      u_slow_mean=cfg['DATALOADER']['SLOW_MEAN_2'])
