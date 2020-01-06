@@ -25,12 +25,12 @@ def main(activation):
     os.makedirs(save_path, exist_ok=True)
 
     sigma = 0.05
-    n_hid = 100
+    n_hid = 150
 
     model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=n_hid, device=device,
                                    activation=activation, sigma=sigma, use_bias=True).to(device)
 
-    train_dataset = FlipFlop(time_length=60)
+    train_dataset = FlipFlop(time_length=60, u_fast_mean=3, u_slow_mean=3)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=50,
                                                    num_workers=2, shuffle=True,
@@ -56,7 +56,7 @@ def main(activation):
             hidden = hidden.detach()
             hidden_list, output, hidden = model(inputs, hidden)
 
-            loss = torch.nn.MSELoss()(output[:, 10:], target[:, :])
+            loss = torch.nn.MSELoss()(output[:, 10:], target[:, 10:])
             loss.backward()
             optimizer.step()
 
