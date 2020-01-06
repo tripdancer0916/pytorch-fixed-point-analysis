@@ -42,3 +42,68 @@ class Torus(data.Dataset):
         target = 0.6 * np.sin(2.2 * freq1 * t) + 0.8 * np.sin(0.5 * freq2 * t)
         target = np.expand_dims(target, axis=1)
         return const_signal, target
+
+
+class FlipFlop(data.Dataset):
+    def __init__(self, time_length, u_fast_mean=4, u_slow_mean=16):
+        self.time_length = time_length
+        self.u_fast_mean = u_fast_mean
+        self.u_slow_mean = u_slow_mean
+
+    def __len__(self):
+        return 200
+
+    def __getitem__(self, item):
+        # input signal
+        u_fast_signal = np.zeros(self.time_length)
+        u_slow_signal = np.zeros(self.time_length)
+        fast_signal_timing = np.random.poisson(self.u_fast_mean, 30)
+        slow_signal_timing = np.random.poisson(self.u_slow_mean, 30)
+        slow_signal_timing[0] = 10
+        u_fast_signal[0] = np.random.choice([-1, 1])
+        u_slow_signal[0] = np.random.choice([-1, 1])
+        count = 0
+        index = 0
+        while index < self.time_length:
+            index += max(0, fast_signal_timing[count])
+            count += 1
+            if index < self.time_length:
+                u_fast_signal[index] = np.random.choice([-1, 1])
+
+        count = 0
+        index = 0
+        while index < self.time_length:
+            index += max(0, slow_signal_timing[count])
+            count += 1
+            if index < self.time_length:
+                u_slow_signal[index] = np.random.choice([-1, 1])
+
+        # target
+        fast_signal_record = np.zeros(self.time_length)
+        slow_signal_record = np.zeros(self.time_length)
+        fast_signal_record[0] = u_fast_signal[0]
+        temporal_memory = u_slow_signal[0]
+        for index in range(1, self.time_length):
+            if u_fast_signal[index] == 0:
+                fast_signal_record[index] = fast_signal_record[index - 1]
+            else:
+                fast_signal_record[index] = u_fast_signal[index]
+
+            if u_slow_signal[index] == 0:
+                slow_signal_record[index] = slow_signal_record[index - 1]
+            else:
+                slow_signal_record[index] = temporal_memory
+                temporal_memory = u_slow_signal[index]
+
+        target_signal = np.zeros(self.time_length - 10)
+        for index in range(10, self.time_length):
+            target_signal[index] = slow_signal_record[index] * fast_signal_record[index]
+
+        fast_signal = np.expand_dims(u_fast_signal, axis=1)
+        slow_signal = np.expand_dims(u_slow_signal, axis=1)
+        input_signal = np.concatenate((fast_signal, slow_signal), axis=1)
+        target_signal = np.expand_dims(target_signal, axis=1)
+
+        return input_signal, target_signal
+
+

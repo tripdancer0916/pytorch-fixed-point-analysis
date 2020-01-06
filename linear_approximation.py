@@ -47,7 +47,7 @@ def main(activation):
 
     eval_dataset = Torus(freq_range=3, time_length=300)
 
-    analyzer = FixedPoint(model=model, device=device, speed_tor=1e-15, max_epochs=3000000)
+    analyzer = FixedPoint(model=model, device=device, speed_tor=1e-15, max_epochs=2000000)
 
     freq1 = 1
     signal_numpy, target = eval_dataset.getitem(freq1)
