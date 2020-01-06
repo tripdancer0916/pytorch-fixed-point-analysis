@@ -30,7 +30,7 @@ def main(activation):
     model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=n_hid, device=device,
                                    activation=activation, sigma=sigma, use_bias=True).to(device)
 
-    train_dataset = FlipFlop(time_length=60, u_fast_mean=3, u_slow_mean=10)
+    train_dataset = FlipFlop(time_length=60, u_fast_mean=4, u_slow_mean=16)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=50,
                                                    num_workers=2, shuffle=True,
