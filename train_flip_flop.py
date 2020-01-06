@@ -2,11 +2,13 @@
 
 import argparse
 import os
+import shutil
 import sys
 
 import numpy as np
 import torch
 import torch.optim as optim
+import yaml
 
 sys.path.append('../')
 
@@ -16,35 +18,47 @@ from dataset import FlipFlop
 from model import RecurrentNeuralNetwork
 
 
-def main(activation):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(device)
+def main(config_path):
+    # hyper-parameter
+    with open(config_path, 'r') as f:
+        cfg = yaml.safe_load(f)
 
+    # save path
     os.makedirs('trained_model', exist_ok=True)
-    save_path = f'trained_model/flipflop_{activation}'
+    save_path = f'trained_model/{cfg["MODEL"]["NAME"]}'
     os.makedirs(save_path, exist_ok=True)
 
-    sigma = 0.05
-    n_hid = 150
+    # copy config file
+    shutil.copyfile(config_path, os.path.join(save_path, os.path.basename(config_path)))
 
-    model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=n_hid, device=device,
-                                   activation=activation, sigma=sigma, use_bias=True).to(device)
+    use_cuda = cfg['MACHINE']['CUDA'] and torch.cuda.is_available()
+    torch.manual_seed(cfg['MACHINE']['SEED'])
+    device = torch.device('cuda' if use_cuda else 'cpu')
+    print(device)
 
-    train_dataset = FlipFlop(time_length=60, u_fast_mean=4, u_slow_mean=10)
+    model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=cfg['MODEL']['SIZE'], device=device,
+                                   activation=cfg['MODEL']['ACTIVATION'], sigma=cfg['MODEL']['SIGMA'],
+                                   use_bias=cfg['MODEL']['USE_BIAS']).to(device)
 
-    train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=50,
+    train_dataset = FlipFlop(time_length=cfg['DATALOADER']['TIME_LENGTH'],
+                             u_fast_mean=cfg['DATALOADER']['FASE_MEAN'],
+                             u_slow_mean=cfg['DATALOADER']['SLOW_MEAN_1'])
+
+    train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg['TRAIN']['BATCHSIZE'],
                                                    num_workers=2, shuffle=True,
                                                    worker_init_fn=lambda x: np.random.seed())
 
     print(model)
 
     optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()),
-                           lr=0.001, weight_decay=0.0001)
+                           lr=cfg['TRAIN']['LR'], weight_decay=cfg['TRAIN']['WEIGHT_DECAY'])
 
-    for epoch in range(2001):
+    for epoch in range(cfg['TRAIN']['NUM_EPOCH'] + 1):
         if epoch == 1000:
-            train_dataset = FlipFlop(time_length=60, u_fast_mean=4, u_slow_mean=16)
-            train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=50,
+            train_dataset = FlipFlop(time_length=cfg['DATALOADER']['TIME_LENGTH'],
+                                     u_fast_mean=cfg['DATALOADER']['FASE_MEAN'],
+                                     u_slow_mean=cfg['DATALOADER']['SLOW_MEAN_2'])
+            train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg['TRAIN']['BATCHSIZE'],
                                                            num_workers=2, shuffle=True,
                                                            worker_init_fn=lambda x: np.random.seed())
         model.train()
@@ -54,7 +68,7 @@ def main(activation):
             inputs, target = Variable(inputs).to(device), Variable(target).to(device)
             # print(inputs.shape)
 
-            hidden = torch.zeros(50, n_hid)
+            hidden = torch.zeros(cfg['TRAIN']['BATCHSIZE'], cfg['MODEL']['SIZE'])
             hidden = hidden.to(device)
 
             optimizer.zero_grad()
@@ -65,16 +79,16 @@ def main(activation):
             loss.backward()
             optimizer.step()
 
-        if epoch > 0 and epoch % 100 == 0:
+        if epoch > 0 and epoch % cfg['TRAIN']['NUM_SAVE_EPOCH'] == 0:
             print(f'Train Epoch: {epoch}, Loss: {loss.item():.6f}')
             print('output', output[0, 10:, 0].cpu().detach().numpy())
             print('target', target[0, 10:, 0].cpu().detach().numpy())
-            torch.save(model.state_dict(), os.path.join(save_path, f'sigma_{sigma}_epoch_{epoch}.pth'))
+            torch.save(model.state_dict(), os.path.join(save_path, f'{cfg["MODEL"]["NAME"]}_epoch_{epoch}.pth'))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='PyTorch RNN training')
-    parser.add_argument('--activation', type=str, default='tanh')
+    parser.add_argument('config_path', type=str)
     args = parser.parse_args()
-    # print(args)
-    main(args.activation)
+    print(args)
+    main(args.config_path)
