@@ -46,7 +46,7 @@ class FixedPoint(object):
                 break
             speed.backward()
             if i % self.lr_decay_epoch == 0 and i > 0:
-                gamma *= 0.82
+                gamma *= 0.9
             if i == self.max_epochs:
                 print(f'forcibly finished. speed={speed.item()}')
                 result_ok = False
