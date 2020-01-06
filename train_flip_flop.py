@@ -41,7 +41,7 @@ def main(config_path):
                                    use_bias=cfg['MODEL']['USE_BIAS']).to(device)
 
     train_dataset = FlipFlop(time_length=cfg['DATALOADER']['TIME_LENGTH'],
-                             u_fast_mean=cfg['DATALOADER']['FASE_MEAN'],
+                             u_fast_mean=cfg['DATALOADER']['FAST_MEAN'],
                              u_slow_mean=cfg['DATALOADER']['SLOW_MEAN_1'])
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg['TRAIN']['BATCHSIZE'],
@@ -56,7 +56,7 @@ def main(config_path):
     for epoch in range(cfg['TRAIN']['NUM_EPOCH'] + 1):
         if epoch == 1000:
             train_dataset = FlipFlop(time_length=cfg['DATALOADER']['TIME_LENGTH'],
-                                     u_fast_mean=cfg['DATALOADER']['FASE_MEAN'],
+                                     u_fast_mean=cfg['DATALOADER']['FAST_MEAN'],
                                      u_slow_mean=cfg['DATALOADER']['SLOW_MEAN_2'])
             train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg['TRAIN']['BATCHSIZE'],
                                                            num_workers=2, shuffle=True,
