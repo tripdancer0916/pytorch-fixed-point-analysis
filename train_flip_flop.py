@@ -30,7 +30,7 @@ def main(activation):
     model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=n_hid, device=device,
                                    activation=activation, sigma=sigma, use_bias=True).to(device)
 
-    train_dataset = FlipFlop(time_length=60, u_fast_mean=4, u_slow_mean=16)
+    train_dataset = FlipFlop(time_length=60, u_fast_mean=4, u_slow_mean=10)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=50,
                                                    num_workers=2, shuffle=True,
@@ -42,6 +42,8 @@ def main(activation):
                            lr=0.001, weight_decay=0.0001)
 
     for epoch in range(2001):
+        if epoch == 1000:
+            train_dataset = FlipFlop(time_length=60, u_fast_mean=4, u_slow_mean=16)
         model.train()
         for i, data in enumerate(train_dataloader):
             inputs, target, = data
