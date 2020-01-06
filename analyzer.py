@@ -6,8 +6,8 @@ from torch.autograd import Variable
 
 
 class FixedPoint(object):
-    def __init__(self, model, device, gamma=0.01, speed_tor=1e-06, max_epochs=1600000,
-                 lr_decay_epoch=5000):
+    def __init__(self, model, device, gamma=0.01, speed_tor=1e-10, max_epochs=1600000,
+                 lr_decay_epoch=2000):
         self.model = model
         self.device = device
         self.gamma = gamma
