@@ -14,7 +14,7 @@ sys.path.append('../')
 
 from torch.autograd import Variable
 
-from dataset import Torus
+from dataset import TorusPhase
 from model import RecurrentNeuralNetwork
 
 
@@ -36,11 +36,11 @@ def main(config_path):
     device = torch.device('cuda' if use_cuda else 'cpu')
     print(device)
 
-    model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=cfg['MODEL']['SIZE'], device=device,
+    model = RecurrentNeuralNetwork(n_in=3, n_out=1, n_hid=cfg['MODEL']['SIZE'], device=device,
                                    activation=cfg['MODEL']['ACTIVATION'], sigma=cfg['MODEL']['SIGMA_1'],
                                    use_bias=cfg['MODEL']['USE_BIAS']).to(device)
 
-    train_dataset = Torus(freq_range=cfg['DATALOADER']['FREQ_RANGE'], time_length=cfg['DATALOADER']['TIME_LENGTH'])
+    train_dataset = TorusPhase(freq_range=cfg['DATALOADER']['FREQ_RANGE'], time_length=cfg['DATALOADER']['TIME_LENGTH'])
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg['TRAIN']['BATCHSIZE'],
                                                    num_workers=2, shuffle=True,
@@ -52,13 +52,6 @@ def main(config_path):
                            lr=cfg['TRAIN']['LR'], weight_decay=cfg['TRAIN']['WEIGHT_DECAY'])
 
     for epoch in range(cfg['TRAIN']['NUM_EPOCH'] + 1):
-        if epoch == 1001:
-            model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=cfg['MODEL']['SIZE'], device=device,
-                                           activation=cfg['MODEL']['ACTIVATION'], sigma=cfg['MODEL']['SIGMA_2'],
-                                           use_bias=cfg['MODEL']['USE_BIAS']).to(device)
-            model_path = f'trained_model/{cfg["MODEL"]["NAME"]}/{cfg["MODEL"]["NAME"]}_epoch_1000.pth'  # NOQA
-            model.load_state_dict(torch.load(model_path, map_location=device))
-
         model.train()
         for i, data in enumerate(train_dataloader):
             inputs, target, = data
