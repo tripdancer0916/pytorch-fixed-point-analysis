@@ -44,6 +44,9 @@ def main(activation):
     for epoch in range(2001):
         if epoch == 1000:
             train_dataset = FlipFlop(time_length=60, u_fast_mean=4, u_slow_mean=16)
+            train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=50,
+                                                           num_workers=2, shuffle=True,
+                                                           worker_init_fn=lambda x: np.random.seed())
         model.train()
         for i, data in enumerate(train_dataloader):
             inputs, target, = data
