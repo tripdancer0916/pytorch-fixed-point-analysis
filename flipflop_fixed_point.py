@@ -127,7 +127,7 @@ def main(config_path):
 
     model.eval()
 
-    analyzer = FixedPoint(model=model, device=device, max_epochs=500000)
+    analyzer = FixedPoint(model=model, device=device, max_epochs=230000)
 
     for trial in range(100):
         signal_numpy, target = eval_dataset.getitem()

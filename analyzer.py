@@ -7,7 +7,7 @@ from torch.autograd import Variable
 
 class FixedPoint(object):
     def __init__(self, model, device, gamma=0.01, speed_tor=1e-10, max_epochs=1600000,
-                 lr_decay_epoch=2000):
+                 lr_decay_epoch=1000):
         self.model = model
         self.device = device
         self.gamma = gamma
@@ -45,7 +45,7 @@ class FixedPoint(object):
                 print(f'epoch: {i}, speed={speed.item()}')
                 break
             speed.backward()
-            if i % self.lr_decay_epoch == 0 and 0 < i < 210000:
+            if i % self.lr_decay_epoch == 0 and 0 < i:
                 gamma *= 0.9
             if i == self.max_epochs:
                 print(f'forcibly finished. speed={speed.item()}')
