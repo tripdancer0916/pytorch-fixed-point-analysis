@@ -57,8 +57,8 @@ class FlipFlop(data.Dataset):
         # input signal
         u_fast_signal = np.zeros(self.time_length)
         u_slow_signal = np.zeros(self.time_length)
-        fast_signal_timing = np.random.poisson(self.u_fast_mean, 30)
-        slow_signal_timing = np.random.poisson(self.u_slow_mean, 30)
+        fast_signal_timing = np.random.poisson(self.u_fast_mean, 100)
+        slow_signal_timing = np.random.poisson(self.u_slow_mean, 100)
         slow_signal_timing[0] = 10
         u_fast_signal[0] = np.random.choice([-1, 1])
         u_slow_signal[0] = np.random.choice([-1, 1])
