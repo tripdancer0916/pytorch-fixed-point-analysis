@@ -14,7 +14,7 @@ sys.path.append('../')
 
 from torch.autograd import Variable
 
-from dataset import FlipFlop
+from dataset import ThreeBitFlipFlop
 from model import RecurrentNeuralNetwork
 
 
@@ -36,13 +36,12 @@ def main(config_path):
     device = torch.device('cuda' if use_cuda else 'cpu')
     print(device)
 
-    model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=cfg['MODEL']['SIZE'], device=device,
+    model = RecurrentNeuralNetwork(n_in=3, n_out=3, n_hid=cfg['MODEL']['SIZE'], device=device,
                                    activation=cfg['MODEL']['ACTIVATION'], sigma=cfg['MODEL']['SIGMA'],
                                    use_bias=cfg['MODEL']['USE_BIAS']).to(device)
 
-    train_dataset = FlipFlop(time_length=cfg['DATALOADER']['TIME_LENGTH'],
-                             u_fast_mean=cfg['DATALOADER']['FAST_MEAN'],
-                             u_slow_mean=cfg['DATALOADER']['SLOW_MEAN_1'])
+    train_dataset = ThreeBitFlipFlop(time_length=cfg['DATALOADER']['TIME_LENGTH'],
+                                     u1_mean=10, u2_mean=10, u3_mean=10)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg['TRAIN']['BATCHSIZE'],
                                                    num_workers=2, shuffle=True,
@@ -54,13 +53,6 @@ def main(config_path):
                            lr=cfg['TRAIN']['LR'], weight_decay=cfg['TRAIN']['WEIGHT_DECAY'])
 
     for epoch in range(cfg['TRAIN']['NUM_EPOCH'] + 1):
-        if epoch == 300:
-            train_dataset = FlipFlop(time_length=cfg['DATALOADER']['TIME_LENGTH'],
-                                     u_fast_mean=cfg['DATALOADER']['FAST_MEAN'],
-                                     u_slow_mean=cfg['DATALOADER']['SLOW_MEAN_2'])
-            train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg['TRAIN']['BATCHSIZE'],
-                                                           num_workers=2, shuffle=True,
-                                                           worker_init_fn=lambda x: np.random.seed())
         model.train()
         for i, data in enumerate(train_dataloader):
             inputs, target, = data
