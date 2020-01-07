@@ -12,7 +12,7 @@ class RecurrentNeuralNetwork(nn.Module):
         self.n_in = n_in
         self.n_hid = n_hid
         self.n_out = n_out
-        self.w_in = nn.Linear(n_in, n_hid, bias=use_bias)
+        self.w_in = nn.Linear(n_in, n_hid, bias=False)
         self.w_hh = nn.Linear(n_hid, n_hid, bias=use_bias)
         self.w_out = nn.Linear(n_hid, n_out, bias=False)
 
