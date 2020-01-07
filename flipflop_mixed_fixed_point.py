@@ -119,7 +119,9 @@ def main(config_path):
                                          u1_mean=10, u2_mean=10, u3_mean=10)
 
     cfg['MODEL']['SIGMA'] = 0.0
+    alpha = np.ones(cfg['MODEL']['SIZE'])
     model = RecurrentNeuralNetwork(n_in=3, n_out=3, n_hid=cfg['MODEL']['SIZE'], device=device,
+                                   alpha_weight=alpha,
                                    activation=cfg['MODEL']['ACTIVATION'], sigma=cfg['MODEL']['SIGMA'],
                                    use_bias=cfg['MODEL']['USE_BIAS']).to(device)
 
