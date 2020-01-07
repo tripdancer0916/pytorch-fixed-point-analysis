@@ -339,3 +339,131 @@ class ThreeBitFlipFlopMixed(data.Dataset):
         return input_signal, target_signal
 
 
+class TwoBitFlipFlop(data.Dataset):
+    def __init__(self, time_length, u1_mean=10, u2_mean=10):
+        self.time_length = time_length
+        self.u1_mean = u1_mean
+        self.u2_mean = u2_mean
+
+    def __len__(self):
+        return 200
+
+    def __getitem__(self, item):
+        # input signal
+        u1_signal = np.zeros(self.time_length)
+        u2_signal = np.zeros(self.time_length)
+        u1_signal_timing = np.random.poisson(self.u1_mean, self.time_length)
+        u2_signal_timing = np.random.poisson(self.u2_mean, self.time_length)
+
+        u1_signal[0] = np.random.choice([-1, 1])
+        u2_signal[0] = np.random.choice([-1, 1])
+        count = 0
+        index = 0
+        while index < self.time_length:
+            index += max(0, u1_signal_timing[count])
+            count += 1
+            if index < self.time_length:
+                u1_signal[index] = np.random.choice([-1, 1])
+        count = 0
+        index = 0
+        while index < self.time_length:
+            index += max(0, u2_signal_timing[count])
+            count += 1
+            if index < self.time_length:
+                u2_signal[index] = np.random.choice([-1, 1])
+
+        # target
+        u1_signal_record = np.zeros(self.time_length)
+        u2_signal_record = np.zeros(self.time_length)
+        u1_signal_record[0] = u1_signal[0]
+        u2_signal_record[0] = u2_signal[0]
+        for index in range(1, self.time_length):
+            if u1_signal[index] == 0:
+                u1_signal_record[index] = u1_signal_record[index - 1]
+            else:
+                u1_signal_record[index] = u1_signal[index]
+            if u2_signal[index] == 0:
+                u2_signal_record[index] = u2_signal_record[index - 1]
+            else:
+                u2_signal_record[index] = u2_signal[index]
+
+        z1_target = np.zeros(self.time_length)
+        z2_target = np.zeros(self.time_length)
+        for index in range(self.time_length):
+            z1_target[index] = u1_signal_record[index]
+            z2_target[index] = u2_signal_record[index]
+
+        u1_signal = np.expand_dims(u1_signal, axis=1)
+        u2_signal = np.expand_dims(u2_signal, axis=1)
+        input_signal = np.concatenate((u1_signal, u2_signal), axis=1)
+        z1_target = np.expand_dims(z1_target, axis=1)
+        z2_target = np.expand_dims(z2_target, axis=1)
+        target_signal = np.concatenate((z1_target, z2_target), axis=1)
+
+        return input_signal, target_signal
+
+
+class TwoBitFlipFlopMixed(data.Dataset):
+    def __init__(self, time_length, u1_mean=10, u2_mean=10):
+        self.time_length = time_length
+        self.u1_mean = u1_mean
+        self.u2_mean = u2_mean
+
+    def __len__(self):
+        return 200
+
+    def __getitem__(self, item):
+        # input signal
+        u1_signal = np.zeros(self.time_length)
+        u2_signal = np.zeros(self.time_length)
+        u1_signal_timing = np.random.poisson(self.u1_mean, self.time_length)
+        u2_signal_timing = np.random.poisson(self.u2_mean, self.time_length)
+
+        u1_signal[0] = np.random.choice([-1, 1])
+        u2_signal[0] = np.random.choice([-1, 1])
+        count = 0
+        index = 0
+        while index < self.time_length:
+            index += max(0, u1_signal_timing[count])
+            count += 1
+            if index < self.time_length:
+                u1_signal[index] = np.random.choice([-1, 1])
+        count = 0
+        index = 0
+        while index < self.time_length:
+            index += max(0, u2_signal_timing[count])
+            count += 1
+            if index < self.time_length:
+                u2_signal[index] = np.random.choice([-1, 1])
+
+        # target
+        u1_signal_record = np.zeros(self.time_length)
+        u2_signal_record = np.zeros(self.time_length)
+        u1_signal_record[0] = u1_signal[0]
+        u2_signal_record[0] = u2_signal[0]
+        for index in range(1, self.time_length):
+            if u1_signal[index] == 0:
+                u1_signal_record[index] = u1_signal_record[index - 1]
+            else:
+                u1_signal_record[index] = u1_signal[index]
+            if u2_signal[index] == 0:
+                u2_signal_record[index] = u2_signal_record[index - 1]
+            else:
+                u2_signal_record[index] = u2_signal[index]
+
+        z1_target = np.zeros(self.time_length)
+        z2_target = np.zeros(self.time_length)
+        for index in range(self.time_length):
+            z1_target[index] = u1_signal_record[index]
+            z2_target[index] = u1_signal_record[index] * u2_signal_record[index]
+
+        u1_signal = np.expand_dims(u1_signal, axis=1)
+        u2_signal = np.expand_dims(u2_signal, axis=1)
+        input_signal = np.concatenate((u1_signal, u2_signal), axis=1)
+        z1_target = np.expand_dims(z1_target, axis=1)
+        z2_target = np.expand_dims(z2_target, axis=1)
+        target_signal = np.concatenate((z1_target, z2_target), axis=1)
+
+        return input_signal, target_signal
+
+
