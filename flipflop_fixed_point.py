@@ -14,6 +14,178 @@ from analyzer import FixedPoint
 from model import RecurrentNeuralNetwork
 
 
+class ThreeBitFlipFlop(object):
+    def __init__(self, time_length, u1_mean=10, u2_mean=10, u3_mean=10):
+        self.time_length = time_length
+        self.u1_mean = u1_mean
+        self.u2_mean = u2_mean
+        self.u3_mean = u3_mean
+
+    def __len__(self):
+        return 200
+
+    def getitem(self):
+        # input signal
+        u1_signal = np.zeros(self.time_length)
+        u2_signal = np.zeros(self.time_length)
+        u3_signal = np.zeros(self.time_length)
+        u1_signal_timing = np.random.poisson(self.u1_mean, self.time_length)
+        u2_signal_timing = np.random.poisson(self.u2_mean, self.time_length)
+        u3_signal_timing = np.random.poisson(self.u3_mean, self.time_length)
+
+        u1_signal[0] = np.random.choice([-1, 1])
+        u2_signal[0] = np.random.choice([-1, 1])
+        u3_signal[0] = np.random.choice([-1, 1])
+        count = 0
+        index = 0
+        while index < self.time_length:
+            index += max(0, u1_signal_timing[count])
+            count += 1
+            if index < self.time_length:
+                u1_signal[index] = np.random.choice([-1, 1])
+        count = 0
+        index = 0
+        while index < self.time_length:
+            index += max(0, u2_signal_timing[count])
+            count += 1
+            if index < self.time_length:
+                u2_signal[index] = np.random.choice([-1, 1])
+        count = 0
+        index = 0
+        while index < self.time_length:
+            index += max(0, u3_signal_timing[count])
+            count += 1
+            if index < self.time_length:
+                u3_signal[index] = np.random.choice([-1, 1])
+
+        # target
+        u1_signal_record = np.zeros(self.time_length)
+        u2_signal_record = np.zeros(self.time_length)
+        u3_signal_record = np.zeros(self.time_length)
+        u1_signal_record[0] = u1_signal[0]
+        u2_signal_record[0] = u2_signal[0]
+        u3_signal_record[0] = u3_signal[0]
+        for index in range(1, self.time_length):
+            if u1_signal[index] == 0:
+                u1_signal_record[index] = u1_signal_record[index - 1]
+            else:
+                u1_signal_record[index] = u1_signal[index]
+            if u2_signal[index] == 0:
+                u2_signal_record[index] = u2_signal_record[index - 1]
+            else:
+                u2_signal_record[index] = u2_signal[index]
+            if u3_signal[index] == 0:
+                u3_signal_record[index] = u3_signal_record[index - 1]
+            else:
+                u3_signal_record[index] = u3_signal[index]
+
+        z1_target = np.zeros(self.time_length)
+        z2_target = np.zeros(self.time_length)
+        z3_target = np.zeros(self.time_length)
+        for index in range(self.time_length):
+            z1_target[index] = u1_signal_record[index]
+            z2_target[index] = u2_signal_record[index]
+            z3_target[index] = u3_signal_record[index]
+
+        u1_signal = np.expand_dims(u1_signal, axis=1)
+        u2_signal = np.expand_dims(u2_signal, axis=1)
+        u3_signal = np.expand_dims(u3_signal, axis=1)
+        input_signal = np.concatenate((u1_signal, u2_signal), axis=1)
+        input_signal = np.concatenate((input_signal, u3_signal), axis=1)
+        z1_target = np.expand_dims(z1_target, axis=1)
+        z2_target = np.expand_dims(z2_target, axis=1)
+        z3_target = np.expand_dims(z3_target, axis=1)
+        target_signal = np.concatenate((z1_target, z2_target, z3_target), axis=1)
+
+        return input_signal, target_signal
+
+
+class ThreeBitFlipFlopMixed(object):
+    def __init__(self, time_length, u1_mean=10, u2_mean=10, u3_mean=10):
+        self.time_length = time_length
+        self.u1_mean = u1_mean
+        self.u2_mean = u2_mean
+        self.u3_mean = u3_mean
+
+    def __len__(self):
+        return 200
+
+    def getitem(self):
+        # input signal
+        u1_signal = np.zeros(self.time_length)
+        u2_signal = np.zeros(self.time_length)
+        u3_signal = np.zeros(self.time_length)
+        u1_signal_timing = np.random.poisson(self.u1_mean, self.time_length)
+        u2_signal_timing = np.random.poisson(self.u2_mean, self.time_length)
+        u3_signal_timing = np.random.poisson(self.u3_mean, self.time_length)
+
+        u1_signal[0] = np.random.choice([-1, 1])
+        u2_signal[0] = np.random.choice([-1, 1])
+        u3_signal[0] = np.random.choice([-1, 1])
+        count = 0
+        index = 0
+        while index < self.time_length:
+            index += max(0, u1_signal_timing[count])
+            count += 1
+            if index < self.time_length:
+                u1_signal[index] = np.random.choice([-1, 1])
+        count = 0
+        index = 0
+        while index < self.time_length:
+            index += max(0, u2_signal_timing[count])
+            count += 1
+            if index < self.time_length:
+                u2_signal[index] = np.random.choice([-1, 1])
+        count = 0
+        index = 0
+        while index < self.time_length:
+            index += max(0, u3_signal_timing[count])
+            count += 1
+            if index < self.time_length:
+                u3_signal[index] = np.random.choice([-1, 1])
+
+        # target
+        u1_signal_record = np.zeros(self.time_length)
+        u2_signal_record = np.zeros(self.time_length)
+        u3_signal_record = np.zeros(self.time_length)
+        u1_signal_record[0] = u1_signal[0]
+        u2_signal_record[0] = u2_signal[0]
+        u3_signal_record[0] = u3_signal[0]
+        for index in range(1, self.time_length):
+            if u1_signal[index] == 0:
+                u1_signal_record[index] = u1_signal_record[index - 1]
+            else:
+                u1_signal_record[index] = u1_signal[index]
+            if u2_signal[index] == 0:
+                u2_signal_record[index] = u2_signal_record[index - 1]
+            else:
+                u2_signal_record[index] = u2_signal[index]
+            if u3_signal[index] == 0:
+                u3_signal_record[index] = u3_signal_record[index - 1]
+            else:
+                u3_signal_record[index] = u3_signal[index]
+
+        z1_target = np.zeros(self.time_length)
+        z2_target = np.zeros(self.time_length)
+        z3_target = np.zeros(self.time_length)
+        for index in range(self.time_length):
+            z1_target[index] = u1_signal_record[index] * u2_signal_record[index]
+            z2_target[index] = u2_signal_record[index] * u3_signal_record[index]
+            z3_target[index] = u1_signal_record[index] * u2_signal_record[index] * u3_signal_record[index]
+
+        u1_signal = np.expand_dims(u1_signal, axis=1)
+        u2_signal = np.expand_dims(u2_signal, axis=1)
+        u3_signal = np.expand_dims(u3_signal, axis=1)
+        input_signal = np.concatenate((u1_signal, u2_signal), axis=1)
+        input_signal = np.concatenate((input_signal, u3_signal), axis=1)
+        z1_target = np.expand_dims(z1_target, axis=1)
+        z2_target = np.expand_dims(z2_target, axis=1)
+        z3_target = np.expand_dims(z3_target, axis=1)
+        target_signal = np.concatenate((z1_target, z2_target, z3_target), axis=1)
+
+        return input_signal, target_signal
+
+
 class Torus(object):
     def __init__(self, time_length=50, freq_range=3):
         self.time_length = time_length
@@ -113,12 +285,11 @@ def main(config_path):
     device = torch.device('cuda' if use_cuda else 'cpu')
     print(device)
 
-    eval_dataset = FlipFlop(time_length=100,
-                            u_fast_mean=cfg['DATALOADER']['FAST_MEAN'],
-                            u_slow_mean=cfg['DATALOADER']['SLOW_MEAN_1'])
+    eval_dataset = ThreeBitFlipFlop(time_length=cfg['DATALOADER']['TIME_LENGTH'],
+                                     u1_mean=10, u2_mean=10, u3_mean=10)
 
     cfg['MODEL']['SIGMA'] = 0.0
-    model = RecurrentNeuralNetwork(n_in=2, n_out=1, n_hid=cfg['MODEL']['SIZE'], device=device,
+    model = RecurrentNeuralNetwork(n_in=3, n_out=3, n_hid=cfg['MODEL']['SIZE'], device=device,
                                    activation=cfg['MODEL']['ACTIVATION'], sigma=cfg['MODEL']['SIGMA'],
                                    use_bias=cfg['MODEL']['USE_BIAS']).to(device)
 
@@ -127,7 +298,7 @@ def main(config_path):
 
     model.eval()
 
-    analyzer = FixedPoint(model=model, device=device, max_epochs=150000)
+    analyzer = FixedPoint(model=model, device=device, max_epochs=120000)
 
     for trial in range(100):
         signal_numpy, target = eval_dataset.getitem()
