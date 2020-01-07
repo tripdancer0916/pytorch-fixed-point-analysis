@@ -286,7 +286,7 @@ def main(config_path):
     print(device)
 
     eval_dataset = ThreeBitFlipFlop(time_length=cfg['DATALOADER']['TIME_LENGTH'],
-                                     u1_mean=10, u2_mean=10, u3_mean=10)
+                                    u1_mean=10, u2_mean=10, u3_mean=10)
 
     cfg['MODEL']['SIGMA'] = 0.0
     model = RecurrentNeuralNetwork(n_in=3, n_out=3, n_hid=cfg['MODEL']['SIZE'], device=device,
@@ -310,7 +310,7 @@ def main(config_path):
         with torch.no_grad():
             hidden_list, _, _ = model(signal, hidden)
 
-        const_signal = torch.tensor([0, 0])
+        const_signal = torch.tensor([0, 0, 0])
         const_signal = const_signal.float().to(device)
 
         fixed_point, result_ok = analyzer.find_fixed_point(hidden_list[0, 50], const_signal, view=True)
