@@ -286,10 +286,14 @@ def main(config_path):
     print(device)
 
     eval_dataset = ThreeBitFlipFlop(time_length=cfg['DATALOADER']['TIME_LENGTH'],
-                                    u1_mean=10, u2_mean=10, u3_mean=10)
+                                    u1_mean=cfg['DATALOADER']['U1_MEAN'],
+                                    u2_mean=cfg['DATALOADER']['U2_MEAN'],
+                                    u3_mean=cfg['DATALOADER']['U3_MEAN'])
 
     cfg['MODEL']['SIGMA'] = 0.0
+    alpha = np.ones(cfg['MODEL']['SIZE'])
     model = RecurrentNeuralNetwork(n_in=3, n_out=3, n_hid=cfg['MODEL']['SIZE'], device=device,
+                                   alpha_weight=alpha,
                                    activation=cfg['MODEL']['ACTIVATION'], sigma=cfg['MODEL']['SIGMA'],
                                    use_bias=cfg['MODEL']['USE_BIAS']).to(device)
 
@@ -298,7 +302,7 @@ def main(config_path):
 
     model.eval()
 
-    analyzer = FixedPoint(model=model, device=device, max_epochs=120000)
+    analyzer = FixedPoint(model=model, device=device, max_epochs=140000)
 
     for trial in range(100):
         signal_numpy, target = eval_dataset.getitem()

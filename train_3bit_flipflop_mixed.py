@@ -36,12 +36,17 @@ def main(config_path):
     device = torch.device('cuda' if use_cuda else 'cpu')
     print(device)
 
+    alpha = np.ones(cfg['MODEL']['SIZE'])
+
     model = RecurrentNeuralNetwork(n_in=3, n_out=3, n_hid=cfg['MODEL']['SIZE'], device=device,
+                                   alpha_weight=alpha,
                                    activation=cfg['MODEL']['ACTIVATION'], sigma=cfg['MODEL']['SIGMA'],
                                    use_bias=cfg['MODEL']['USE_BIAS']).to(device)
 
     train_dataset = ThreeBitFlipFlopMixed(time_length=cfg['DATALOADER']['TIME_LENGTH'],
-                                          u1_mean=10, u2_mean=10, u3_mean=10)
+                                          u1_mean=cfg['DATALOADER']['U1_MEAN'],
+                                          u2_mean=cfg['DATALOADER']['U2_MEAN'],
+                                          u3_mean=cfg['DATALOADER']['U3_MEAN'])
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=cfg['TRAIN']['BATCHSIZE'],
                                                    num_workers=2, shuffle=True,
@@ -58,7 +63,6 @@ def main(config_path):
             inputs, target, = data
             inputs, target, = inputs.float(), target.float()
             inputs, target = Variable(inputs).to(device), Variable(target).to(device)
-            # print(inputs.shape)
 
             hidden = torch.zeros(cfg['TRAIN']['BATCHSIZE'], cfg['MODEL']['SIZE'])
             hidden = hidden.to(device)
