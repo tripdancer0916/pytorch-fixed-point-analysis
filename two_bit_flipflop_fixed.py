@@ -197,7 +197,7 @@ def main(config_path):
         with torch.no_grad():
             hidden_list, _, _ = model(signal, hidden)
 
-        const_signal = torch.tensor([0, 0, 0])
+        const_signal = torch.tensor([0, 0])
         const_signal = const_signal.float().to(device)
 
         fixed_point, result_ok = analyzer.find_fixed_point(hidden_list[0, 50], const_signal, view=True)
