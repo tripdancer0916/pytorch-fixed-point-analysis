@@ -70,9 +70,9 @@ class FixedPoint(object):
                         w_hh @ fixed_point + torch.unsqueeze(self.model.w_hh.bias, dim=1)
 
         if self.model.activation == 'relu':
-            activated = F.relu(pre_activates) - fixed_point
+            activated = F.relu(pre_activates)
         else:
-            activated = torch.tanh(pre_activates) - fixed_point
+            activated = torch.tanh(pre_activates)
 
         jacobian = torch.zeros(self.model.n_hid, self.model.n_hid)
         for i in range(self.model.n_hid):
